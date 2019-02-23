@@ -1,0 +1,226 @@
+<html>
+<head>
+ <title>Firebase Realtime Database Web</title>
+ <style type="text/css">
+ 	.new{
+ 		align-items: center;
+			background-image:linear-gradient(45deg,grey, #d7d7d7);
+             font-family: "Times New Roman", Times, serif;
+			box-shadow: 13px 9px 11px #908E8D;
+			text-align: center;
+			margin: auto;
+            width: 50%;
+            border: 3px #00b300;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 24px;
+            opacity: 0.93;
+            height: 47.7%;
+            font-size: 20px;
+            text-align: center;
+            position: center;
+            overflow-y: scroll;
+
+ 	}
+ 	body{
+        background-position: center;
+ 		background-image:url(3.jpg);
+           
+        opacity: 0.9;
+        min-height: 100%;
+        background-repeat: no-repeat;
+background-attachment: fixed;
+background-position: center;
+background-size: cover;
+font-family: 'Open Sans', sans-serif;
+overflow-y: scroll;
+ 	}
+ 	h2{
+ 		color: #2929a3;
+ 	}
+ 	.note{
+ 		color: red;
+ 		font-size: 20px;
+ 	}
+ 	#tbl_users_list{
+ 		color:white;
+ 		font-size: 19px;
+ 	}
+ 	button {
+  background-color:blue; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+ </style>
+ 
+ 
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDuDG43gBRJnhP21rQBy26MB39LN57jNLQ",
+    authDomain: "hello-6ee76.firebaseapp.com",
+    databaseURL: "https://hello-6ee76.firebaseio.com",
+    projectId: "hello-6ee76",
+    storageBucket: "hello-6ee76.appspot.com",
+    messagingSenderId: "258708985298"
+  };
+  firebase.initializeApp(config);
+</script>
+ </script>
+</head>
+<body>
+
+ <table class="new">
+  <tr>
+   <td>Id: </td>
+   <td><input type="text" name="id" id="user_id" /></td>
+  </tr>
+  <tr>
+   <td>User Name: </td>
+   <td><input type="text" name="user_name" id="user_name" /></td>
+  </tr>
+   <tr>
+    <td>Source: </td>
+    <td><input type="text" name="source" id="source" /></td>
+  </tr>
+   <tr>
+    <td>Destination: </td>
+    <td><input type="text" name="destination" id="destination" /></td>
+  </tr>
+   <tr>
+   <td>Notam_Number: </td>
+   <td><input type="text" name="notam_number" id="notam_number" /></td>
+  </tr>
+   <tr>
+   <td>Notam: </td>
+   <td><input type="text" name="notam" id="notam" /></td>
+  </tr>
+   <tr>
+   <td>Decoded: </td>
+   <td><input type="text" name="decoded" id="decoded" /></td>
+  </tr>
+  <tr>
+   <td colspan="2">
+    <button><input type="button" value="Save" onclick="save_user();" /></button>
+    <!--<input type="button" value="Update" onclick="update_user();" />-->
+   <!-- <input type="button" value="Delete" onclick="delete_user();" />-->
+   </td>
+  </tr>
+ </table>
+ 
+ 	
+ 
+ 
+<!--  <h2>Users List</h2>
+    <id class="note">note: just for reference;</id>
+ <table id="tbl_users_list" border="1" border-color="white">
+  <tr>
+   <td>#ID</td>
+   <td>NAME</td>
+  </tr>
+ </table>-->
+ 
+ <script>
+ 
+  var tblUsers = document.getElementById('tbl_users_list');
+  var databaseRef = firebase.database().ref('users/');
+  var rowIndex = 1;
+  
+  databaseRef.once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+   var childKey = childSnapshot.key;
+   var childData = childSnapshot.val();
+   
+   var row = tblUsers.insertRow(rowIndex);
+   var cellId = row.insertCell(0);
+   var cellName = row.insertCell(1);
+   cellId.appendChild(document.createTextNode(childKey));
+   cellName.appendChild(document.createTextNode(childData.user_name));
+   
+   rowIndex = rowIndex + 1;
+    });
+  });
+   
+  function save_user(){
+  	var uid = firebase.database().ref().child('users').push().key;
+  var user_name = document.getElementById('user_name').value;
+  var source = document.getElementById('source').value;
+  var destination = document.getElementById('destination').value;
+  var notam_number = document.getElementById('notam_number').value;
+  var notam = document.getElementById('notam').value;
+  var decoded = document.getElementById('decoded').value;
+  //var user_name = document.getElementById('user_name').value;
+  
+  
+   
+   
+   var data = {
+    user_id: uid,
+    user_name: user_name,
+    source:source,
+    destination:destination,
+    notam_number:notam_number,
+    notam:notam,
+    decoded:decoded
+   }
+   
+   var updates = {};
+   updates['/users/' + uid] = data;
+   firebase.database().ref().update(updates);
+   
+   //alert('The user is created successfully!');
+   reload_page();
+  }
+  
+  function update_user(){
+   var user_name = document.getElementById('user_name').value;
+   var user_id = document.getElementById('user_id').value;
+   var source = document.getElementById('source').value;
+   var destination = document.getElementById('destination').value;
+   var notam_number = document.getElementById('notam_number').value;
+   var notam = document.getElementById('notam').value;
+   var decoded = document.getElementById('decoded').value;
+   var data = {
+    user_id: user_id,
+    user_name: user_name,
+    source:source,
+    destination:destination,
+    notam_number:notam_number,
+    notam:notam,
+    decoded:decoded
+
+   }
+   
+   var updates = {};
+   updates['/users/' + user_id] = data;
+   firebase.database().ref().update(updates);
+   
+   //alert('The user is updated successfully!');
+   
+   reload_page();
+  }
+  
+  function delete_user(){
+   var user_id = document.getElementById('user_id').value;
+  
+   firebase.database().ref().child('/users/' + user_id).remove();
+  // alert('The user is deleted successfully!');
+   reload_page();
+  }
+  
+  function reload_page(){
+   window.location.reload();
+  }
+  
+ </script>
+ hello
+</body>
+</html>
+<!--https://console.firebase.google.com/u/0/project/hello-6ee76/database/hello-6ee76/data/
